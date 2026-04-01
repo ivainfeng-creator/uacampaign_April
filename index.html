@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VIVERSE New User Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #0a0a0f; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; color: #fff; }
+    h1, h2, h3 { font-family: 'Rajdhani', sans-serif; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0a0a0f; }
+    ::-webkit-scrollbar-thumb { background: #7c6aff; border-radius: 3px; }
+
+    /* ── Grid background ── */
+    .grid-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(124,106,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,106,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridDrift 30s linear infinite;
+    }
+    @keyframes gridDrift {
+      from { background-position: 0 0; }
+      to   { background-position: 60px 60px; }
+    }
+
+    /* ── Particles ── */
+    @keyframes particleRise {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 0.6; }
+      100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
+    }
+    .particle {
+      position: fixed; border-radius: 50%; pointer-events: none; z-index: 1;
+      animation: particleRise linear infinite;
+    }
+
+    /* ── Glow animations ── */
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 18px rgba(124,106,255,0.45), 0 0 36px rgba(124,106,255,0.2); }
+      50%       { box-shadow: 0 0 40px rgba(124,106,255,0.85), 0 0 80px rgba(124,106,255,0.4), 0 0 120px rgba(124,106,255,0.15); }
+    }
+    @keyframes glowPulsePink {
+      0%, 100% { box-shadow: 0 0 18px rgba(255,106,176,0.45), 0 0 36px rgba(255,106,176,0.2); }
+      50%       { box-shadow: 0 0 40px rgba(255,106,176,0.85), 0 0 80px rgba(255,106,176,0.4); }
+    }
+    @keyframes enterGlow {
+      0%, 100% {
+        box-shadow: 0 0 24px rgba(124,106,255,0.6), 0 0 60px rgba(255,106,176,0.3);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 50px rgba(124,106,255,0.9), 0 0 100px rgba(255,106,176,0.5);
+        transform: scale(1.02);
+      }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes toastIn {
+      0%   { opacity: 0; transform: translateX(110%); }
+      12%  { opacity: 1; transform: translateX(0); }
+      88%  { opacity: 1; transform: translateX(0); }
+      100% { opacity: 0; transform: translateX(110%); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes checkPop {
+      0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+      70%  { transform: scale(1.2) rotate(5deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    /* ── Utility ── */
+    .glow-purple  { animation: glowPulse 2.2s ease-in-out infinite; }
+    .glow-pink    { animation: glowPulsePink 2.2s ease-in-out infinite; }
+    .float-anim   { animation: float 3.5s ease-in-out infinite; }
+    .fade-up      { animation: fadeUp 0.55s ease-out both; }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #7c6aff 0%, #ff6ab0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .neon-purple {
+      color: #7c6aff;
+      text-shadow: 0 0 12px rgba(124,106,255,0.8), 0 0 24px rgba(124,106,255,0.4);
+    }
+    .neon-pink {
+      color: #ff6ab0;
+      text-shadow: 0 0 12px rgba(255,106,176,0.8), 0 0 24px rgba(255,106,176,0.4);
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      background: linear-gradient(135deg, #7c6aff, #9d5eff);
+      color: #fff; border: none; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(124,106,255,0.5);
+    }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-cta {
+      background: linear-gradient(135deg, #7c6aff 0%, #c850c0 50%, #ff6ab0 100%);
+      background-size: 200% 200%;
+      color: #fff; border: none; cursor: pointer;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      letter-spacing: 3px;
+      animation: enterGlow 2.4s ease-in-out infinite;
+      transition: transform 0.2s;
+    }
+    .btn-cta:hover { transform: translateY(-3px); }
+
+    /* ── Cards ── */
+    .mission-card {
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+    .mission-card:hover { transform: translateY(-5px); }
+    .mission-card.readonly { cursor: default; }
+    .mission-card.readonly:hover { transform: none; }
+
+    .prize-card { transition: transform 0.3s, box-shadow 0.3s; }
+    .prize-card:hover { transform: translateY(-7px); }
+
+    /* ── Accordion ── */
+    .acc-body {
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+    }
+
+    /* ── Modal backdrop ── */
+    .modal-bg {
+      background: rgba(5,5,10,0.82);
+      backdrop-filter: blur(10px);
+    }
+
+    /* ── Toast ── */
+    .toast { animation: toastIn 5.5s ease-in-out forwards; }
+
+    /* ── Progress bar ── */
+    .prog-fill { transition: width 0.55s cubic-bezier(0.4,0,0.2,1); }
+
+    /* ── Scan line overlay ── */
+    .scanlines {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent, transparent 3px,
+        rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px
+      );
+    }
+  </style>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'neon-purple': '#7c6aff',
+            'neon-pink': '#ff6ab0',
+            'dark-bg': '#0a0a0f',
+            'dark-card': '#13131f',
+            'dark-border': '#1c1c2e',
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    /* ════════════════════════════════════════════
+       CAMPAIGN CONFIG  — edit these values
+    ════════════════════════════════════════════ */
+    const CFG = {
+      // Change to: 'coming_soon' | 'active' | 'drawing' | 'ended'
+      status: 'active',
+      startDate:  new Date('2026-04-01T00:00:00-05:00'),
+      endDate:    new Date('2026-04-08T23:59:59-05:00'),
+      drawingDate:              'April 15, 2026',
+      winnerAnnouncementDate:   'April 20, 2026',
+      winnerListUrl:            '#winner-list',
+    };
+
+    /* ════════════════════════════════════════════
+       SVG ICON COMPONENTS
+    ════════════════════════════════════════════ */
+    const Icon = ({ d, viewBox = "0 0 24 24", size = 24, fill = "none", stroke = "currentColor", sw = 2, lc = "round", lj = "round", style, className }) => (
+      <svg width={size} height={size} viewBox={viewBox} fill={fill} stroke={stroke}
+           strokeWidth={sw} strokeLinecap={lc} strokeLinejoin={lj} style={style} className={className}
+           xmlns="http://www.w3.org/2000/svg">
+        {Array.isArray(d) ? d.map((path, i) => <path key={i} d={path} />) : <path d={d} />}
+      </svg>
+    );
+
+    const DownloadIcon   = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>;
+    const UserPlusIcon   = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>;
+    const GamepadIcon    = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect x="2" y="6" width="20" height="12" rx="2"/></svg>;
+    const PlayCircleIcon = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>;
+    const CrownIcon      = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/><path d="M5 20h14"/></svg>;
+    const MedalIcon      = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><circle cx="12" cy="17" r="5"/><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/></svg>;
+    const AwardIcon      = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>;
+    const XIcon          = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+    const ChevronIcon    = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><polyline points="6 9 12 15 18 9"/></svg>;
+    const CheckIcon      = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><polyline points="20 6 9 13 4 10"/></svg>;
+    const LockIcon       = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
+    const AlertIcon      = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
+    const TrophyIcon     = (p) => <svg {...{width:p.size||24,height:p.size||24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",...p}}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>;
+    const SpinnerIcon    = ({ size = 24, style, ...p }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+           strokeLinecap="round" strokeLinejoin="round"
+           style={{ animation: 'spin 1s linear infinite', ...style }} {...p}>
+        <line x1="12" y1="2" x2="12" y2="6"/>
+        <line x1="12" y1="18" x2="12" y2="22"/>
+        <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/>
+        <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
+        <line x1="2" y1="12" x2="6" y2="12"/>
+        <line x1="18" y1="12" x2="22" y2="12"/>
+        <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/>
+        <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+      </svg>
+    );
+
+    /* ════════════════════════════════════════════
+       OFFICIAL RULES — 3 languages
+    ════════════════════════════════════════════ */
+    const RULES = {
+      en: [
+        { id:1, title:'Eligibility',
+          body:`This promotion is intended for legal residents of the 50 United States and Washington D.C. only. Participants must be 18 years of age or older at the time of entry. This promotion is not open to residents outside of the United States, including but not limited to residents of the European Union, United Kingdom, or Japan. By participating, you confirm that you are a legal resident of the United States and meet all eligibility requirements. Employees of VIVERSE and its parent, subsidiaries, and affiliated companies, and their immediate family members, are not eligible to participate.` },
+        { id:2, title:'Promotion Period',
+          body:`Start Date: [To be filled] at 12:00 AM Eastern Time (ET). End Date: [To be filled] at 11:59 PM Eastern Time (ET).` },
+        { id:3, title:'Drawing',
+          body:`On or around [Drawing Date], Sponsor will conduct a random drawing from all eligible entries. Task Entry participants receive 5 entries each; AMOE participants receive 1 entry each. All entries are pooled in a single drawing. Odds of winning depend on total eligible entries received.` },
+        { id:4, title:'Winner Notification',
+          body:`Winners will be notified by email within 5 business days of the drawing. Winners must respond within 7 business days. Failure to respond results in forfeiture and an alternate winner will be selected.` },
+        { id:5, title:'Winner Verification',
+          body:`Winners must provide valid government-issued ID confirming age and U.S. residency, and sign a Declaration of Eligibility and Release of Liability. Any winner unable to verify U.S. residency will be disqualified and an alternate winner selected.` },
+        { id:6, title:'Privacy',
+          body:`Personal information collected will be used solely for promotion administration and winner notification per VIVERSE's Privacy Policy. Not sold to third parties. This promotion is not directed at EU or non-U.S. residents. If located outside the U.S., do not submit personal information. California residents have additional rights under CCPA.` },
+        { id:7, title:'General Terms',
+          body:`Governed by U.S. law and the State of [to be filled]. Sponsor reserves the right to cancel or modify the promotion. Entries via bots or automated means will be disqualified. Winner list available at [URL] within 30 days of end date. Void outside the U.S. and where prohibited by law.` },
+        { id:8, title:'Sponsor',
+          body:`Sponsor: [VIVERSE Legal Entity Name]. Contact: viverse-promotion@[domain].com` },
+      ],
+      zh: [
+        { id:1, title:'參加資格',
+          body:`本活動僅限美國50州及華盛頓特區之合法居民參加。參加者於報名時必須年滿18歲。本活動不對美國境外居民開放，包括但不限於歐盟、英國或日本居民。參加即表示您確認您為美國合法居民並符合所有資格要求。VIVERSE及其母公司、子公司、關聯公司的員工及其直系親屬不得參加。` },
+        { id:2, title:'活動期間',
+          body:`開始日期：[待填寫]，美東時間（ET）上午12:00。結束日期：[待填寫]，美東時間（ET）晚上11:59。` },
+        { id:3, title:'參加方式',
+          body:`方式一 — 任務報名：在活動期間完成活動頁面上的所有任務，可獲得5個抽獎資格，每人限參加一次。方式二 — 免費報名（AMOE）：無需完成任務。點擊「不完成任務也能報名」，提交姓名和電子郵件地址，可獲得1個抽獎資格，每人限參加一次。報名即表示您確認您為美國合法居民且年滿18歲。` },
+        { id:4, title:'獎品',
+          body:`第一獎：$30亞馬遜禮品卡 × 1。第二獎：$15亞馬遜禮品卡 × 3。第三獎：$10亞馬遜禮品卡 × 5。總預估零售價值：$125美元。獎品不可轉讓，不可兌換現金。本活動不受Amazon.com, Inc.贊助、認可或管理。` },
+        { id:5, title:'抽獎',
+          body:`主辦方將於[抽獎日期]前後對所有有效報名進行隨機抽獎。任務報名每人獲得5個抽獎資格；免費報名每人獲得1個抽獎資格。所有抽獎資格合併進行單一抽獎。中獎機率取決於收到的有效報名總數。` },
+        { id:6, title:'得獎通知',
+          body:`得獎者將在抽獎後5個工作天內以電子郵件通知。得獎者必須在7個工作天內回覆。未回覆將視為棄權，並將選出備用得獎者。` },
+        { id:7, title:'得獎者驗證',
+          body:`得獎者必須提供有效的政府核發身份證件，確認年齡和美國居民身份，並簽署資格聲明書和責任豁免書。無法驗證美國居民身份的得獎者將被取消資格，並選出備用得獎者。` },
+        { id:8, title:'隱私政策',
+          body:`所收集的個人資料僅用於活動管理和得獎通知，依據VIVERSE隱私政策。不會出售給第三方。本活動不針對歐盟或非美國居民。如您身處美國境外，請勿提交個人資料。加州居民依據CCPA享有額外權利。` },
+        { id:9, title:'一般條款',
+          body:`本活動受美國法律及[待填寫]州法律管轄。主辦方保留取消或修改活動的權利。透過機器人或自動化手段提交的報名將被取消資格。得獎名單將於活動結束後30天內在[網址]公布。在美國境外及法律禁止的地區無效。` },
+        { id:10, title:'主辦單位',
+          body:`主辦單位：[VIVERSE法律實體名稱]。聯絡方式：viverse-promotion@[domain].com` },
+      ],
+      ja: [
+        { id:1, title:'参加資格',
+          body:`本プロモーションは、米国50州およびワシントンD.C.の合法的居住者のみを対象としています。参加者は参加時点で18歳以上である必要があります。本プロモーションは、欧州連合、英国、日本の居住者を含む米国外の居住者には開放されていません。参加することにより、あなたが米国の合法的居住者であり、すべての参加資格要件を満たすことを確認したことになります。VIVERSEおよびその親会社・子会社・関連会社の従業員とその直系家族は参加資格がありません。` },
+        { id:2, title:'プロモーション期間',
+          body:`開始日：[記入予定]、東部時間（ET）午前12:00。終了日：[記入予定]、東部時間（ET）午後11:59。` },
+        { id:3, title:'参加方法',
+          body:`方法1 — タスク参加：プロモーション期間中にキャンペーンページのすべてのミッションを完了すると5回の抽選エントリーを獲得できます。一人につき一回限り。方法2 — 無料エントリー（AMOE）：ミッション不要。「ミッションなしでエントリー」をクリックし、お名前とメールアドレスを送信すると1回の抽選エントリーを獲得できます。一人につき一回限り。エントリーすることにより、あなたが米国の合法的居住者であり18歳以上であることを確認したことになります。` },
+        { id:4, title:'賞品',
+          body:`1等賞：Amazonギフトカード$30 × 1。2等賞：Amazonギフトカード$15 × 3。3等賞：Amazonギフトカード$10 × 5。総推定小売価値：$125 USD。賞品は譲渡不可で、現金との交換はできません。本プロモーションはAmazon.com, Inc.がスポンサー・推薦・管理するものではありません。` },
+        { id:5, title:'抽選',
+          body:`[抽選日]前後に、スポンサーがすべての有効なエントリーからランダム抽選を実施します。タスク参加者は各5エントリー、AMOE参加者は各1エントリーを受け取ります。すべてのエントリーは単一の抽選にプールされます。当選確率は受け取った有効エントリーの総数によって異なります。` },
+        { id:6, title:'当選通知',
+          body:`当選者は抽選後5営業日以内にメールで通知されます。当選者は7営業日以内に返答する必要があります。返答がない場合は辞退とみなされ、代替当選者が選出されます。` },
+        { id:7, title:'当選者確認',
+          body:`当選者は年齢と米国居住者であることを確認する有効な政府発行の身分証明書を提出し、資格宣言書と免責同意書に署名する必要があります。米国居住者であることを確認できない当選者は失格となり、代替当選者が選出されます。` },
+        { id:8, title:'プライバシー',
+          body:`収集された個人情報は、VIVERSEのプライバシーポリシーに従いプロモーション管理と当選通知のみに使用されます。第三者への販売はありません。本プロモーションはEUまたは米国外の居住者を対象としていません。米国外に在住の場合は個人情報を提出しないでください。カリフォルニア州の居住者はCCPAに基づく追加の権利を有します。` },
+        { id:9, title:'一般条項',
+          body:`本プロモーションは米国法および[記入予定]州の法律に準拠します。スポンサーはプロモーションをキャンセルまたは変更する権利を留保します。ボットや自動化された手段によるエントリーは失格となります。当選者リストは終了日から30日以内に[URL]で公開されます。米国外および法律で禁止されている地域では無効です。` },
+        { id:10, title:'スポンサー',
+          body:`スポンサー：[VIVERSE法的事業体名]。連絡先：viverse-promotion@[domain].com` },
+      ],
+    };
+
+    /* ════════════════════════════════════════════
+       GEO ALERT BANNER
+    ════════════════════════════════════════════ */
+    function GeoAlertBanner({ onDismiss }) {
+      return (
+        <div style={{ background:'rgba(202,138,4,0.1)', borderBottom:'1px solid rgba(202,138,4,0.25)' }}
+             className="relative z-50 flex items-center justify-between gap-4 px-5 py-2">
+          <div className="flex items-center gap-2">
+            <AlertIcon size={13} style={{ color:'#f59e0b', flexShrink:0 }} />
+            <span style={{ color:'#f59e0b', fontSize:'12px', lineHeight:'1.5' }}>
+              This promotion is open to U.S. residents only. You may not be eligible to participate.
+            </span>
+          </div>
+          <button onClick={onDismiss} className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+                  style={{ background:'none', border:'none', cursor:'pointer', color:'#f59e0b' }}>
+            <XIcon size={13} />
+          </button>
+        </div>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       TOAST NOTIFICATION
+    ════════════════════════════════════════════ */
+    function Toast({ message, visible }) {
+      if (!visible) return null;
+      return (
+        <div className="toast fixed top-6 right-6 z-50 max-w-xs rounded-2xl px-5 py-4"
+             style={{ background:'#13131f', border:'1px solid rgba(124,106,255,0.5)',
+                      boxShadow:'0 0 40px rgba(124,106,255,0.3)' }}>
+          <p style={{ color:'#ddd', fontSize:'13px', lineHeight:'1.6' }}>{message}</p>
+        </div>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       PARTICLE BACKGROUND
+    ════════════════════════════════════════════ */
+    function Particles() {
+      const pts = useRef(
+        Array.from({ length: 22 }, (_, i) => ({
+          id: i,
+          left:     Math.random() * 100,
+          size:     Math.random() * 2.5 + 1,
+          duration: Math.random() * 18 + 14,
+          delay:    Math.random() * 12,
+          color:    i % 3 === 0 ? '#ff6ab0' : '#7c6aff',
+        }))
+      ).current;
+
+      return (
+        <>
+          <div className="grid-bg" />
+          <div className="scanlines" />
+          {pts.map(p => (
+            <div key={p.id} className="particle"
+                 style={{
+                   left: `${p.left}%`,
+                   width: `${p.size}px`, height: `${p.size}px`,
+                   background: p.color,
+                   boxShadow: `0 0 ${p.size * 4}px ${p.color}`,
+                   animationDuration: `${p.duration}s`,
+                   animationDelay: `${p.delay}s`,
+                 }} />
+          ))}
+        </>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       COUNTDOWN TIMER
+    ════════════════════════════════════════════ */
+    function Countdown({ targetDate, label }) {
+      const [t, setT] = useState(null);
+
+      useEffect(() => {
+        const tick = () => {
+          const diff = targetDate - Date.now();
+          if (diff <= 0) { setT({ done: true }); return; }
+          const s = Math.floor(diff / 1000);
+          setT({
+            days:    Math.floor(s / 86400),
+            hours:   Math.floor((s % 86400) / 3600),
+            minutes: Math.floor((s % 3600) / 60),
+            seconds: s % 60,
+            live:    diff < 86400000,
+          });
+        };
+        tick();
+        const id = setInterval(tick, 1000);
+        return () => clearInterval(id);
+      }, [targetDate]);
+
+      if (!t || t.done) return null;
+      const pad = n => String(n).padStart(2, '0');
+
+      return (
+        <div className="flex flex-col items-center gap-4">
+          <p style={{ color:'#555', fontSize:'11px', letterSpacing:'3px' }}>{label}</p>
+          {t.live ? (
+            <div className="flex items-center gap-1 font-mono text-5xl font-bold">
+              <span className="neon-purple">{pad(t.hours)}</span>
+              <span style={{ color:'rgba(124,106,255,0.5)' }}>:</span>
+              <span className="neon-purple">{pad(t.minutes)}</span>
+              <span style={{ color:'rgba(124,106,255,0.5)' }}>:</span>
+              <span className="neon-pink">{pad(t.seconds)}</span>
+            </div>
+          ) : (
+            <div className="flex items-end gap-3 flex-wrap justify-center">
+              {[['DAYS',t.days],['HRS',t.hours],['MIN',t.minutes],['SEC',t.seconds]].map(([lbl,val]) => (
+                <div key={lbl} className="text-center">
+                  <div className="font-mono font-bold text-4xl rounded-xl px-5 py-3 min-w-[72px]"
+                       style={{ background:'rgba(124,106,255,0.08)', border:'1px solid rgba(124,106,255,0.22)' }}>
+                    <span className="neon-purple">{pad(val)}</span>
+                  </div>
+                  <p className="mt-2 text-xs tracking-widest" style={{ color:'#444' }}>{lbl}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════════ */
+    function Hero({ status, onStart }) {
+      return (
+        <section className="relative z-10 min-h-screen flex items-center justify-center text-center px-6 py-28">
+          <div className="max-w-3xl w-full fade-up">
+
+            {status === 'coming_soon' && <>
+              <div className="pill mb-8" style={{ display:'inline-block', padding:'4px 16px', borderRadius:'99px', fontSize:'11px', fontWeight:700, letterSpacing:'3px', background:'rgba(124,106,255,0.12)', border:'1px solid rgba(124,106,255,0.3)', color:'#7c6aff' }}>
+                COMING SOON
+              </div>
+              <h1 className="text-6xl md:text-8xl font-bold mb-6 gradient-text" style={{ lineHeight:1.05, letterSpacing:'1px' }}>
+                VIVERSE<br/>NEW USER CHALLENGE
+              </h1>
+              <p className="text-lg mb-12" style={{ color:'#777' }}>Complete missions. Unlock your reward.</p>
+              <Countdown targetDate={CFG.startDate} label="STARTS IN" />
+              <div className="mt-10">
+                <button className="btn-primary rounded-2xl px-12 py-4 text-lg" disabled style={{ opacity:0.4, letterSpacing:'2px' }}>
+                  Coming Soon
+                </button>
+              </div>
+            </>}
+
+            {status === 'active' && <>
+              <div className="float-anim mb-8" style={{ display:'inline-block', padding:'5px 18px', borderRadius:'99px', fontSize:'11px', fontWeight:700, letterSpacing:'3px', background:'rgba(255,106,176,0.12)', border:'1px solid rgba(255,106,176,0.35)', color:'#ff6ab0' }}>
+                ⚡ LIMITED TIME EVENT
+              </div>
+              <h1 className="font-bold mb-6" style={{ fontSize:'clamp(2.8rem,8vw,5.5rem)', lineHeight:1.05, letterSpacing:'1px' }}>
+                <span className="gradient-text">VIVERSE</span>
+                <br />
+                <span className="text-white">NEW USER</span>
+                <br />
+                <span className="text-white">CHALLENGE</span>
+              </h1>
+              <p className="text-lg mb-14" style={{ color:'#888', maxWidth:'480px', margin:'0 auto 3.5rem' }}>
+                Complete missions. Unlock your reward.
+              </p>
+              <Countdown targetDate={CFG.endDate} label="CAMPAIGN ENDS IN" />
+            </>}
+
+            {status === 'drawing' && <>
+              <div className="mb-8" style={{ display:'inline-block', padding:'6px 20px', borderRadius:'99px', fontSize:'12px', fontWeight:700, letterSpacing:'3px', background:'rgba(250,204,21,0.12)', border:'1px solid rgba(250,204,21,0.35)', color:'#facc15' }}>
+                🎰 DRAWING IN PROGRESS
+              </div>
+              <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white" style={{ lineHeight:1.1 }}>
+                Drawing in Progress
+              </h1>
+              <p className="text-lg" style={{ color:'#888' }}>
+                Winner announcement on <span style={{ color:'#facc15' }}>{CFG.winnerAnnouncementDate}</span>
+              </p>
+            </>}
+
+            {status === 'ended' && <>
+              <div className="mb-8" style={{ display:'inline-block', padding:'5px 16px', borderRadius:'99px', fontSize:'11px', fontWeight:700, letterSpacing:'3px', background:'rgba(100,100,100,0.12)', border:'1px solid rgba(100,100,100,0.25)', color:'#666' }}>
+                CAMPAIGN ENDED
+              </div>
+              <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white" style={{ lineHeight:1.1 }}>
+                This campaign has ended.
+              </h1>
+              <p className="text-lg mb-10" style={{ color:'#555' }}>Thank you to all who participated.</p>
+              <a href={CFG.winnerListUrl}
+                 style={{ display:'inline-block', padding:'14px 36px', borderRadius:'16px', color:'#fff', textDecoration:'none', background:'rgba(124,106,255,0.25)', border:'1px solid rgba(124,106,255,0.45)', fontWeight:600 }}>
+                View Winner List →
+              </a>
+            </>}
+
+          </div>
+        </section>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       MISSION BOARD
+    ════════════════════════════════════════════ */
+    const MISSIONS = [
+      { id:1, title:'Download VIVERSE App',   Ico: DownloadIcon   },
+      { id:2, title:'Register / Sign In',     Ico: UserPlusIcon   },
+      { id:3, title:'Play a Game',            Ico: GamepadIcon    },
+      { id:4, title:'Watch a Video',          Ico: PlayCircleIcon },
+    ];
+    const M_STATES = ['locked','in_progress','completed'];
+
+    function MissionCard({ mission, state, onClick, readonly }) {
+      const cfg = {
+        locked:      { label:'LOCKED',      lc:'#444',    bc:'rgba(60,60,60,0.15)',    bb:'#2a2a2a',    ic:'#3a3a4a', StatusIco: LockIcon    },
+        in_progress: { label:'IN PROGRESS', lc:'#7c6aff', bc:'rgba(124,106,255,0.14)', bb:'rgba(124,106,255,0.45)', ic:'#7c6aff', StatusIco: SpinnerIcon },
+        completed:   { label:'COMPLETED',   lc:'#22c55e', bc:'rgba(34,197,94,0.12)',   bb:'rgba(34,197,94,0.4)',  ic:'#22c55e', StatusIco: CheckIcon  },
+      }[state];
+
+      return (
+        <div className={`mission-card rounded-2xl p-6 relative overflow-hidden ${readonly?'readonly':''}`}
+             onClick={readonly ? undefined : onClick}
+             style={{ background:'rgba(13,13,22,0.92)', border:`1px solid ${cfg.bb}`,
+                      boxShadow: state !== 'locked' ? `0 0 28px ${cfg.bb}44` : 'none' }}>
+
+          {/* shimmer on completed */}
+          {state === 'completed' && (
+            <div style={{ position:'absolute', inset:0, background:'linear-gradient(135deg,transparent 40%,rgba(34,197,94,0.04) 60%,transparent 80%)', pointerEvents:'none' }} />
+          )}
+
+          {/* number badge */}
+          <div className="absolute top-4 left-4 flex items-center justify-center text-xs font-bold rounded-full w-6 h-6"
+               style={{ background:'rgba(124,106,255,0.15)', color:'#7c6aff', border:'1px solid rgba(124,106,255,0.3)' }}>
+            {mission.id}
+          </div>
+
+          {/* status icon */}
+          <div className="absolute top-4 right-4">
+            <cfg.StatusIco size={15} style={{ color: cfg.ic }} />
+          </div>
+
+          {/* mission icon */}
+          <div className="flex items-center justify-center mx-auto mt-6 mb-4 rounded-2xl"
+               style={{ width:56, height:56, background: state==='locked' ? 'rgba(40,40,55,0.5)' : `${cfg.lc}18`, border:`1px solid ${state==='locked'?'#222':cfg.lc+'44'}` }}>
+            <mission.Ico size={26} style={{ color: cfg.ic }} />
+          </div>
+
+          <h3 className="text-center font-semibold text-sm mb-3"
+              style={{ color: state==='locked' ? '#444' : '#d8d8e8' }}>
+            {mission.title}
+          </h3>
+
+          <div className="flex justify-center">
+            <span className="text-xs font-bold tracking-widest px-3 py-1 rounded-full"
+                  style={{ color: cfg.lc, background: cfg.bc, border:`1px solid ${cfg.bb}` }}>
+              {cfg.label}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    function MissionBoard({ campaignStatus, sectionRef }) {
+      const [states, setStates] = useState(['locked','locked','locked','locked']);
+      const readonly = campaignStatus !== 'active';
+
+      const cycle = (i) => {
+        if (readonly) return;
+        setStates(prev => {
+          const n = [...prev];
+          n[i] = M_STATES[(M_STATES.indexOf(prev[i]) + 1) % M_STATES.length];
+          return n;
+        });
+      };
+
+      const done = states.every(s => s === 'completed');
+      const count = states.filter(s => s === 'completed').length;
+      const pct = (count / 4) * 100;
+
+      return (
+        <section ref={sectionRef} id="missions" className="relative z-10 px-6 py-24">
+          <div className="max-w-3xl mx-auto">
+
+            <div className="text-center mb-14">
+              <div className="inline-block mb-4 px-3 py-1 rounded-full text-xs font-bold tracking-widest"
+                   style={{ background:'rgba(124,106,255,0.1)', border:'1px solid rgba(124,106,255,0.28)', color:'#7c6aff' }}>
+                MISSIONS
+              </div>
+              <h2 className="text-5xl font-bold text-white mb-3">Your Missions</h2>
+              <p style={{ color:'#777', fontSize:'15px' }}>Complete all missions to enter the prize draw</p>
+            </div>
+
+            {/* progress bar */}
+            <div className="mb-10">
+              <div className="flex justify-between mb-2">
+                <span style={{ color:'#555', fontSize:'13px' }}>Progress</span>
+                <span style={{ color:'#7c6aff', fontSize:'13px', fontWeight:600 }}>{count} / 4</span>
+              </div>
+              <div className="rounded-full h-2 overflow-hidden" style={{ background:'rgba(124,106,255,0.1)' }}>
+                <div className="h-full rounded-full prog-fill"
+                     style={{ width:`${pct}%`, background:'linear-gradient(90deg,#7c6aff,#ff6ab0)' }} />
+              </div>
+            </div>
+
+            {/* grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10">
+              {MISSIONS.map((m, i) => (
+                <MissionCard key={m.id} mission={m} state={states[i]}
+                             onClick={() => cycle(i)} readonly={readonly} />
+              ))}
+            </div>
+
+            {/* Enter Draw */}
+            {done && campaignStatus === 'active' && (
+              <div className="text-center fade-up">
+                <button className="btn-cta rounded-2xl px-16 py-5 text-xl inline-flex items-center gap-3">
+                  <TrophyIcon size={22} />
+                  ENTER DRAW
+                </button>
+                <p className="mt-3" style={{ color:'#555', fontSize:'12px' }}>5 draw entries unlocked!</p>
+              </div>
+            )}
+
+            {done && campaignStatus === 'drawing' && (
+              <div className="text-center">
+                <button disabled className="rounded-2xl px-16 py-5 text-lg font-bold tracking-widest cursor-not-allowed"
+                        style={{ background:'rgba(80,80,80,0.2)', border:'1px solid #333', color:'#444', letterSpacing:'2px' }}>
+                  Drawing Closed
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       PRIZE SHOWCASE
+    ════════════════════════════════════════════ */
+    function PrizeCard({ tier, amount, count, Ico, glow, textGrad }) {
+      return (
+        <div className="prize-card rounded-2xl p-7 text-center relative overflow-hidden"
+             style={{ background:'rgba(13,13,22,0.95)', border:`1px solid ${glow}30`,
+                      boxShadow:`0 0 35px ${glow}18` }}>
+          <div style={{ position:'absolute', inset:0, background:`radial-gradient(ellipse at 50% 0%, ${glow}18 0%, transparent 65%)`, pointerEvents:'none' }} />
+
+          <div className="inline-flex items-center justify-center rounded-2xl mb-5"
+               style={{ width:60, height:60, background:`${glow}18`, border:`1px solid ${glow}35` }}>
+            <Ico size={28} style={{ color: glow }} />
+          </div>
+
+          <div className="text-xs font-bold tracking-widest mb-4" style={{ color: glow }}>{tier}</div>
+
+          <div className="font-bold mb-1" style={{ fontSize:'3.5rem', lineHeight:1, fontFamily:'Rajdhani,sans-serif', ...textGrad }}>
+            ${amount}
+          </div>
+
+          <div className="text-sm font-medium mb-4" style={{ color:'#bbb' }}>Amazon Gift Card</div>
+
+          <span className="text-xs font-bold px-3 py-1 rounded-full"
+                style={{ color: glow, background:`${glow}14`, border:`1px solid ${glow}2a` }}>
+            × {count} {count === 1 ? 'winner' : 'winners'}
+          </span>
+        </div>
+      );
+    }
+
+    function PrizeShowcase() {
+      const prizes = [
+        { tier:'1ST PRIZE', amount:30, count:1, Ico:CrownIcon, glow:'#FFD700',
+          textGrad:{ background:'linear-gradient(135deg,#FFD700,#FFA000)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' } },
+        { tier:'2ND PRIZE', amount:15, count:3, Ico:MedalIcon, glow:'#C0C0C0',
+          textGrad:{ background:'linear-gradient(135deg,#E8E8E8,#909090)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' } },
+        { tier:'3RD PRIZE', amount:10, count:5, Ico:AwardIcon, glow:'#CD7F32',
+          textGrad:{ background:'linear-gradient(135deg,#CD7F32,#8B4513)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' } },
+      ];
+
+      return (
+        <section className="relative z-10 px-6 py-24">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-14">
+              <div className="inline-block mb-4 px-3 py-1 rounded-full text-xs font-bold tracking-widest"
+                   style={{ background:'rgba(255,215,0,0.1)', border:'1px solid rgba(255,215,0,0.25)', color:'#FFD700' }}>
+                PRIZE POOL
+              </div>
+              <h2 className="text-5xl font-bold text-white mb-3">Prizes</h2>
+              <p style={{ color:'#777', fontSize:'15px' }}>Complete all missions for 5 draw entries. Win amazing Amazon Gift Cards!</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {prizes.map(p => <PrizeCard key={p.tier} {...p} />)}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       AMOE MODAL
+    ════════════════════════════════════════════ */
+    function AMOEModal({ onClose, onScrollToRules }) {
+      const [form, setForm] = useState({ name:'', email:'', agreed:false });
+      const [errs, setErrs] = useState({});
+      const [done, setDone] = useState(false);
+
+      const validate = () => {
+        const e = {};
+        if (!form.name.trim()) e.name = 'Name is required';
+        if (!form.email.trim()) e.email = 'Email is required';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email';
+        if (!form.agreed) e.agreed = 'You must agree to the Official Rules to continue';
+        return e;
+      };
+
+      const submit = (e) => {
+        e.preventDefault();
+        const v = validate();
+        if (Object.keys(v).length) { setErrs(v); return; }
+        setDone(true);
+      };
+
+      const goRules = (e) => {
+        e.preventDefault();
+        onClose();
+        setTimeout(onScrollToRules, 80);
+      };
+
+      const fieldStyle = (key) => ({
+        background:'rgba(255,255,255,0.04)',
+        border:`1px solid ${errs[key] ? '#ef4444' : 'rgba(124,106,255,0.28)'}`,
+        borderRadius:'12px', padding:'12px 16px',
+        color:'#e0e0e0', width:'100%', outline:'none',
+        fontFamily:'Space Grotesk,sans-serif', fontSize:'14px',
+      });
+
+      return (
+        <div className="modal-bg fixed inset-0 z-50 flex items-center justify-center px-4"
+             onClick={(e) => e.target === e.currentTarget && onClose()}>
+          <div className="relative w-full max-w-md rounded-2xl p-8"
+               style={{ background:'#0e0e1a', border:'1px solid rgba(124,106,255,0.35)',
+                        boxShadow:'0 0 80px rgba(124,106,255,0.25)' }}>
+
+            <button onClick={onClose} className="absolute top-4 right-4 opacity-50 hover:opacity-100 transition-opacity"
+                    style={{ background:'none', border:'none', cursor:'pointer', color:'#fff' }}>
+              <XIcon size={18} />
+            </button>
+
+            {done ? (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
+                     style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.35)',
+                              animation:'checkPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both' }}>
+                  <CheckIcon size={30} style={{ color:'#22c55e' }} />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">You're entered!</h3>
+                <p style={{ color:'#22c55e', fontSize:'15px' }}>Good luck. 🍀</p>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-2xl font-bold text-white mb-1">Free Entry</h3>
+                <p className="mb-7" style={{ color:'#777', fontSize:'13px' }}>
+                  No missions required. Free entry receives 1 draw entry.
+                </p>
+
+                <form onSubmit={submit} noValidate>
+                  <div className="mb-4">
+                    <input type="text" placeholder="Your name" value={form.name}
+                           onChange={e => { setForm(f=>({...f,name:e.target.value})); setErrs(v=>({...v,name:''})); }}
+                           style={fieldStyle('name')} />
+                    {errs.name && <p style={{ color:'#ef4444', fontSize:'12px', marginTop:'4px' }}>{errs.name}</p>}
+                  </div>
+
+                  <div className="mb-4">
+                    <input type="email" placeholder="Your email" value={form.email}
+                           onChange={e => { setForm(f=>({...f,email:e.target.value})); setErrs(v=>({...v,email:''})); }}
+                           style={fieldStyle('email')} />
+                    {errs.email && <p style={{ color:'#ef4444', fontSize:'12px', marginTop:'4px' }}>{errs.email}</p>}
+                  </div>
+
+                  <div className="mb-7">
+                    <label className="flex gap-3 cursor-pointer" style={{ alignItems:'flex-start' }}>
+                      <input type="checkbox" checked={form.agreed}
+                             onChange={e => { setForm(f=>({...f,agreed:e.target.checked})); setErrs(v=>({...v,agreed:''})); }}
+                             style={{ accentColor:'#7c6aff', marginTop:'2px', flexShrink:0 }} />
+                      <span style={{ color:'#888', fontSize:'12px', lineHeight:'1.7' }}>
+                        I agree to the{' '}
+                        <a href="#official-rules" onClick={goRules}
+                           style={{ color:'#7c6aff', textDecoration:'underline' }}>Official Rules</a>
+                        {' '}and confirm I am 18 years of age or older and a legal resident of the United States.
+                      </span>
+                    </label>
+                    {errs.agreed && <p style={{ color:'#ef4444', fontSize:'12px', marginTop:'4px' }}>{errs.agreed}</p>}
+                  </div>
+
+                  <button type="submit" className="btn-primary rounded-xl py-3 w-full font-semibold"
+                          style={{ fontSize:'15px', letterSpacing:'1px' }}>
+                    Submit Entry
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       AMOE SECTION
+    ════════════════════════════════════════════ */
+    function AMOESection({ campaignStatus, onScrollToRules }) {
+      const [open, setOpen] = useState(false);
+      if (campaignStatus === 'drawing' || campaignStatus === 'ended') return null;
+
+      return (
+        <>
+          <div className="relative z-10 text-center py-4 px-6">
+            <p style={{ color:'#3a3a4a', fontSize:'13px' }}>
+              Prefer not to complete missions? You can still enter the draw.
+            </p>
+            <button onClick={() => setOpen(true)}
+                    style={{ color:'#4a4a5e', fontSize:'13px', textDecoration:'underline',
+                             background:'none', border:'none', cursor:'pointer', marginTop:'3px' }}
+                    onMouseEnter={e => e.target.style.color='#666'}
+                    onMouseLeave={e => e.target.style.color='#4a4a5e'}>
+              Enter without missions →
+            </button>
+          </div>
+          {open && <AMOEModal onClose={() => setOpen(false)} onScrollToRules={onScrollToRules} />}
+        </>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       OFFICIAL RULES
+    ════════════════════════════════════════════ */
+    function AccordionItem({ title, body, open, onToggle }) {
+      return (
+        <div style={{ borderBottom:'1px solid rgba(30,30,48,0.9)' }}>
+          <button onClick={onToggle}
+                  className="w-full flex items-center justify-between py-4 px-1 text-left transition-colors"
+                  style={{ background:'none', border:'none', cursor:'pointer',
+                           color: open ? '#d8d8e8' : '#666' }}>
+            <span style={{ fontWeight:600, fontSize:'14px' }}>{title}</span>
+            <span style={{ transform: open ? 'rotate(180deg)' : 'rotate(0)', transition:'transform 0.3s ease',
+                           flexShrink:0, marginLeft:'12px' }}>
+              <ChevronIcon size={15} style={{ color:'#7c6aff' }} />
+            </span>
+          </button>
+          <div className="acc-body"
+               style={{ maxHeight: open ? '800px' : '0', opacity: open ? 1 : 0 }}>
+            <p className="pb-5 px-1 text-sm leading-relaxed" style={{ color:'#5a5a6e' }}>{body}</p>
+          </div>
+        </div>
+      );
+    }
+
+    function OfficialRules({ sectionRef }) {
+      const [lang, setLang] = useState('en');
+      const [opened, setOpened] = useState(new Set([1]));
+
+      const toggle = (id) => setOpened(prev => {
+        const s = new Set(prev);
+        s.has(id) ? s.delete(id) : s.add(id);
+        return s;
+      });
+
+      const rules = RULES[lang];
+
+      return (
+        <section ref={sectionRef} id="official-rules" className="relative z-10 px-6 py-24">
+          <div className="max-w-3xl mx-auto">
+
+            {/* header + lang switcher */}
+            <div className="mb-8">
+              <p className="text-xs font-bold tracking-widest mb-2" style={{ color:'#7c6aff' }}>LEGAL</p>
+              <h2 className="text-5xl font-bold text-white">Official Rules</h2>
+            </div>
+
+            {/* NO PURCHASE banner — always outside accordion */}
+            <div className="mb-6 px-5 py-4 rounded-xl text-center font-bold text-sm"
+                 style={{ background:'rgba(220,38,38,0.12)', border:'1px solid rgba(220,38,38,0.35)', color:'#f87171' }}>
+              NO PURCHASE NECESSARY TO ENTER OR WIN.
+              Open to U.S. residents 18+ only. Void where prohibited.
+            </div>
+
+            {/* accordion */}
+            <div className="rounded-2xl overflow-hidden px-5"
+                 style={{ background:'rgba(13,13,22,0.95)', border:'1px solid rgba(28,28,46,0.9)' }}>
+              {rules.map(r => (
+                <AccordionItem key={r.id} title={`${r.id}. ${r.title}`}
+                               body={r.body} open={opened.has(r.id)}
+                               onToggle={() => toggle(r.id)} />
+              ))}
+            </div>
+
+          </div>
+        </section>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════════ */
+    function Footer({ onScrollToRules }) {
+      return (
+        <footer className="relative z-10 px-6 py-14 text-center"
+                style={{ borderTop:'1px solid rgba(28,28,46,0.8)' }}>
+          <div className="mb-6">
+            <span className="font-bold text-4xl" style={{ fontFamily:'Rajdhani,sans-serif' }}>
+              <span className="text-white">VI</span>
+              <span style={{ color:'#7c6aff' }}>VERSE</span>
+            </span>
+          </div>
+          <div className="flex items-center justify-center gap-5 mb-6">
+            <button onClick={onScrollToRules}
+                    style={{ color:'#444', background:'none', border:'none', cursor:'pointer', fontSize:'13px',
+                             transition:'color 0.2s' }}
+                    onMouseEnter={e=>e.target.style.color='#888'}
+                    onMouseLeave={e=>e.target.style.color='#444'}>
+              Official Rules
+            </button>
+            <span style={{ color:'#2a2a3a' }}>|</span>
+            <a href="#" style={{ color:'#444', textDecoration:'none', fontSize:'13px', transition:'color 0.2s' }}
+               onMouseEnter={e=>e.target.style.color='#888'}
+               onMouseLeave={e=>e.target.style.color='#444'}>
+              Privacy Policy
+            </a>
+          </div>
+          <p style={{ color:'#2a2a3a', fontSize:'12px' }}>© 2025 VIVERSE. All rights reserved.</p>
+        </footer>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       DIVIDER
+    ════════════════════════════════════════════ */
+    function Divider() {
+      return (
+        <div className="relative z-10 max-w-3xl mx-auto px-6">
+          <div style={{ height:'1px', background:'linear-gradient(90deg,transparent,rgba(124,106,255,0.2),transparent)' }} />
+        </div>
+      );
+    }
+
+    /* ════════════════════════════════════════════
+       APP ROOT
+    ════════════════════════════════════════════ */
+    function App() {
+      const [status, setStatus]       = useState(CFG.status);
+      const [geoAlert, setGeoAlert]   = useState(false);
+      const [toast, setToast]         = useState({ show:false, msg:'' });
+      const missionRef = useRef(null);
+      const rulesRef   = useRef(null);
+
+      /* geo detection */
+      useEffect(() => {
+        try {
+          const tz   = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+          const lang = (navigator.language || '').toLowerCase();
+          const inUS = tz.startsWith('America/') || lang === 'en-us' || lang.startsWith('en-us');
+          if (!inUS) setGeoAlert(true);
+        } catch (_) {}
+      }, []);
+
+      /* status polling — every 5 min */
+      useEffect(() => {
+        const check = () => {
+          const now = Date.now();
+          // In production replace with: fetch('/api/campaign/status').then(...)
+          let next = CFG.status;
+          if (now < CFG.startDate.getTime()) next = 'coming_soon';
+          else if (now > CFG.endDate.getTime()) next = 'drawing';
+
+          if (next !== status) {
+            if (next === 'drawing' && status === 'active') {
+              setToast({
+                show: true,
+                msg: `The campaign has ended! We're now selecting winners. Results will be announced on ${CFG.winnerAnnouncementDate}.`,
+              });
+              setTimeout(() => setToast({ show:false, msg:'' }), 6000);
+            }
+            setStatus(next);
+          }
+        };
+        check();
+        const id = setInterval(check, 5 * 60 * 1000);
+        return () => clearInterval(id);
+      }, [status]);
+
+      const scrollTo = (ref) => ref.current?.scrollIntoView({ behavior:'smooth', block:'start' });
+
+      return (
+        <div style={{ background:'#0a0a0f', minHeight:'100vh', position:'relative' }}>
+          <Particles />
+
+          {geoAlert && <GeoAlertBanner onDismiss={() => setGeoAlert(false)} />}
+          <Toast message={toast.msg} visible={toast.show} />
+
+          <Hero status={status} onStart={() => scrollTo(missionRef)} />
+          <Divider />
+          <MissionBoard campaignStatus={status} sectionRef={missionRef} />
+          <Divider />
+          <PrizeShowcase />
+          <Divider />
+          <AMOESection campaignStatus={status} onScrollToRules={() => scrollTo(rulesRef)} />
+          <Divider />
+          <OfficialRules sectionRef={rulesRef} />
+          <Footer onScrollToRules={() => scrollTo(rulesRef)} />
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
