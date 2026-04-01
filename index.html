@@ -446,7 +446,7 @@
     ════════════════════════════════════════════ */
     function Hero({ status, onStart }) {
       return (
-        <section className="relative z-10 min-h-screen flex items-center justify-center text-center px-6 py-28">
+        <section className="relative z-10 flex items-center justify-center text-center px-6 pt-28 pb-16">
           <div className="max-w-3xl w-full fade-up">
 
             {status === 'coming_soon' && <>
@@ -526,7 +526,7 @@
 
     function MissionCard({ mission, state, onClick, readonly }) {
       const cfg = {
-        locked:      { label:'LOCKED',      lc:'#444',    bc:'rgba(60,60,60,0.15)',    bb:'#2a2a2a',    ic:'#3a3a4a', StatusIco: LockIcon    },
+        locked:      { label:'LOCKED',      lc:'#666',    bc:'rgba(80,80,80,0.18)',    bb:'#3a3a3a',    ic:'#5a5a6e', StatusIco: LockIcon    },
         in_progress: { label:'IN PROGRESS', lc:'#7c6aff', bc:'rgba(124,106,255,0.14)', bb:'rgba(124,106,255,0.45)', ic:'#7c6aff', StatusIco: SpinnerIcon },
         completed:   { label:'COMPLETED',   lc:'#22c55e', bc:'rgba(34,197,94,0.12)',   bb:'rgba(34,197,94,0.4)',  ic:'#22c55e', StatusIco: CheckIcon  },
       }[state];
@@ -560,7 +560,7 @@
           </div>
 
           <h3 className="text-center font-semibold text-sm mb-3"
-              style={{ color: state==='locked' ? '#444' : '#d8d8e8' }}>
+              style={{ color: state==='locked' ? '#777' : '#d8d8e8' }}>
             {mission.title}
           </h3>
 
@@ -592,7 +592,7 @@
       const pct = (count / 4) * 100;
 
       return (
-        <section ref={sectionRef} id="missions" className="relative z-10 px-6 py-24">
+        <section ref={sectionRef} id="missions" className="relative z-10 px-6 py-12">
           <div className="max-w-3xl mx-auto">
 
             <div className="text-center mb-14">
@@ -690,7 +690,7 @@
       ];
 
       return (
-        <section className="relative z-10 px-6 py-24">
+        <section className="relative z-10 px-6 py-12">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-14">
               <div className="inline-block mb-4 px-3 py-1 rounded-full text-xs font-bold tracking-widest"
@@ -827,15 +827,15 @@
 
       return (
         <>
-          <div className="relative z-10 text-center py-4 px-6">
-            <p style={{ color:'#3a3a4a', fontSize:'13px' }}>
+          <div className="relative z-10 text-center py-2 px-6">
+            <p style={{ color:'#555', fontSize:'13px' }}>
               Prefer not to complete missions? You can still enter the draw.
             </p>
             <button onClick={() => setOpen(true)}
-                    style={{ color:'#4a4a5e', fontSize:'13px', textDecoration:'underline',
+                    style={{ color:'#666', fontSize:'13px', textDecoration:'underline',
                              background:'none', border:'none', cursor:'pointer', marginTop:'3px' }}
-                    onMouseEnter={e => e.target.style.color='#666'}
-                    onMouseLeave={e => e.target.style.color='#4a4a5e'}>
+                    onMouseEnter={e => e.target.style.color='#888'}
+                    onMouseLeave={e => e.target.style.color='#666'}>
               Enter without missions →
             </button>
           </div>
@@ -892,7 +892,7 @@
 
             {/* NO PURCHASE banner — always outside accordion */}
             <div className="mb-6 px-5 py-4 rounded-xl text-center font-bold text-sm"
-                 style={{ background:'rgba(220,38,38,0.12)', border:'1px solid rgba(220,38,38,0.35)', color:'#f87171' }}>
+                 style={{ background:'rgba(124,106,255,0.07)', border:'1px solid rgba(124,106,255,0.22)', color:'#888' }}>
               NO PURCHASE NECESSARY TO ENTER OR WIN.
               Open to U.S. residents 18+ only. Void where prohibited.
             </div>
